@@ -1,8 +1,4 @@
-const mesh = require('../input/mesh.json');
-//const mesh = require('../input/mesh_x_sin_cos_10000.json');
-//const mesh = require('../input/mesh_x_sin_cos_20000.json');
-
-function main(input, amount) {
+module.exports = function main(input, amount) {
     const elementMap = matchElementsWithHeights(input);
     const nodeToElementsMap = createNodeToElementsMap(elementMap);
     extendElementMapByNeighbors(elementMap, nodeToElementsMap);
@@ -95,6 +91,3 @@ function stripResultDown(viewSpots) {
         }
     });
 }
-
-const viewSpots = main(mesh, 2);
-console.log(JSON.stringify(viewSpots, null, 2));
