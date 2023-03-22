@@ -12,8 +12,8 @@ if (typeof viewSpotAmountString === 'undefined') {
     exitWithError(`number of view spots not defined.`);
 }
 const viewSpotAmount = parseInt(viewSpotAmountString);
-if (isNaN(viewSpotAmount) || viewSpotAmount < 0) {
-    exitWithError(`invalid number of view spots input: '${viewSpotAmountString}'. It should be a positive integer.`);
+if (isNaN(viewSpotAmount) || viewSpotAmount <= 0) {
+    exitWithError(`invalid number of view spots input: '${viewSpotAmountString}'. It should be an integer greater than 0.`);
 }
 fs.readFile(fileName, 'utf8', (error, mesh) => {
     if (error) {
