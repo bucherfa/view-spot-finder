@@ -2,47 +2,62 @@ const mesh = require('../input/mesh.json');
 //const mesh = require('../input/mesh_x_sin_cos_10000.json');
 //const mesh = require('../input/mesh_x_sin_cos_20000.json');
 
-const elementMap = {};
-for (const { id, nodes } of mesh.elements) {
-    elementMap[id] = {
-        id,
-        nodes,
-    };
-}
-for (const { element_id, value } of mesh.values) {
-    elementMap[element_id].height = value;
+function main(input, amount) {
+    const elementMap = matchElementsWithHeights(input);
+    const nodeToElementsMap = createNodeToElementsMap(elementMap);
+    extendElementMapByNeighbors(elementMap, nodeToElementsMap);
+    const viewSpots = findViewSpots(elementMap, input.values, amount);
+    return stripResultDown(viewSpots);
 }
 
-const nodeToElementMap = {};
-Object.values(elementMap).forEach(element => {
-    for (const node of element.nodes) {
-        if (typeof nodeToElementMap[node] === 'undefined') {
-            nodeToElementMap[node] = [ element ];
-        } else {
-            nodeToElementMap[node].push(element);
-        }
+function matchElementsWithHeights(input) {
+    const elementMap = {};
+    for (const { id, nodes } of input.elements) {
+        elementMap[id] = {
+            id,
+            nodes,
+        };
     }
-})
-for (const element of Object.values(elementMap)) {
-    element.neighbors = [];
-    const addedNeighborsIds = [];
-    for (const node of element.nodes) {
-        const neighborElements = nodeToElementMap[node];
-        for (const neighborElement of neighborElements) {
-            const id = neighborElement.id;
-            if (id === element.id) {
-                continue;
+    for (const { element_id, value } of input.values) {
+        elementMap[element_id].height = value;
+    }
+    return elementMap;
+}
+
+function createNodeToElementsMap(elementMap) {
+    const nodeToElementsMap = {};
+    Object.values(elementMap).forEach(element => {
+        for (const node of element.nodes) {
+            if (typeof nodeToElementsMap[node] === 'undefined') {
+                nodeToElementsMap[node] = [ element ];
+            } else {
+                nodeToElementsMap[node].push(element);
             }
-            if (addedNeighborsIds.includes(id)) {
-                continue;
+        }
+    });
+    return nodeToElementsMap;
+}
+
+function extendElementMapByNeighbors(elementMap, nodeToElementsMap) {
+    for (const element of Object.values(elementMap)) {
+        element.neighbors = [];
+        const addedNeighborsIds = [];
+        for (const node of element.nodes) {
+            const neighborElements = nodeToElementsMap[node];
+            for (const neighborElement of neighborElements) {
+                const id = neighborElement.id;
+                if (id === element.id) {
+                    continue;
+                }
+                if (addedNeighborsIds.includes(id)) {
+                    continue;
+                }
+                addedNeighborsIds.push(id);
+                element.neighbors.push(neighborElement);
             }
-            addedNeighborsIds.push(id);
-            element.neighbors.push(neighborElement);
         }
     }
 }
-
-const sortedByHeightsDesc = mesh.values.sort((a, b) => b.value - a.value);
 
 function hasNoHigherNeighbor(element) {
     const height = element.height;
@@ -56,14 +71,30 @@ function hasNoHigherNeighbor(element) {
     return noHigherNeighbor;
 }
 
-const viewSpots = [];
-for (const value of sortedByHeightsDesc) {
-    const id = value.element_id;
-    const element = elementMap[id];
-    if (hasNoHigherNeighbor(element)) {
-        viewSpots.push(element);
+function findViewSpots(elementMap, heights, amount) {
+    const sortedByHeightsDesc = heights.sort((a, b) => b.value - a.value);
+    const viewSpots = [];
+    for (const value of sortedByHeightsDesc) {
+        const id = value.element_id;
+        const element = elementMap[id];
+        if (hasNoHigherNeighbor(element)) {
+            viewSpots.push(element);
+            if (viewSpots.length >= amount) {
+                break;
+            }
+        }
     }
+    return viewSpots;
 }
-for (const viewSpot of viewSpots) {
-    console.log(viewSpots);
+
+function stripResultDown(viewSpots) {
+    return viewSpots.map(({ id , height, }) => {
+        return {
+            element_id: id,
+            value: height,
+        }
+    });
 }
+
+const viewSpots = main(mesh, 2);
+console.log(JSON.stringify(viewSpots, null, 2));
