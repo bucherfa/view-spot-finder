@@ -6,7 +6,10 @@ const viewSpotAmount = args[3];
 
 findViewSpots({ fileName, viewSpotAmount })
   .then(viewSpots => {
-    console.log(viewSpots);
+    const formatted = viewSpots
+      .map(spot => `  {element_id: ${spot.element_id}, value: ${spot.value}}`)
+      .join(',\n');
+    console.log(`[\n${formatted}\n]`);
   })
   .catch(error => {
     console.error(`${error}\n\nUsage: node src/cli.js <mesh file> <number of view spots>`);
