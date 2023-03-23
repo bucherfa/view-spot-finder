@@ -1,10 +1,10 @@
-const utils = require('./utils');
+const findViewSpots = require('./main');
 
 const args = process.argv;
 const fileName = args[2];
 const viewSpotAmount = args[3];
 
-utils({ fileName, viewSpotAmount })
+findViewSpots({ fileName, viewSpotAmount })
   .then(viewSpots => {
     console.log(viewSpots);
   })
