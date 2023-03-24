@@ -1,10 +1,10 @@
-const findViewSpots = require('./main');
+const { processInput } = require('./main');
 
 const args = process.argv;
 const fileName = args[2];
 const viewSpotAmount = args[3];
 
-findViewSpots({ fileName, viewSpotAmount })
+processInput({ fileName, viewSpotAmount })
   .then(viewSpots => {
     const formatted = viewSpots
       .map(spot => `  {element_id: ${spot.element_id}, value: ${spot.value}}`)

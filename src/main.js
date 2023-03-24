@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-module.exports = function (input) {
+function processInput (input) {
   return new Promise((resolve, reject) => {
     if (typeof input.fileName === 'undefined') {
       reject(new Error('no mesh file defined.'));
@@ -24,7 +24,7 @@ module.exports = function (input) {
       resolve(viewSpots);
     });
   });
-};
+}
 
 function main (input, amount) {
   const elementMap = matchElementsWithHeights(input);
@@ -39,7 +39,8 @@ function matchElementsWithHeights (input) {
   for (const { id, nodes } of input.elements) {
     elementMap[id] = {
       id,
-      nodes
+      nodes,
+      viewSpot: false
     };
   }
   // eslint-disable-next-line camelcase
@@ -84,16 +85,20 @@ function extendElementMapByNeighbors (elementMap, nodeToElementsMap) {
   }
 }
 
-function hasNoHigherNeighbor (element) {
+function hasNoHigherOrViewSpotNeighbor (element) {
   const height = element.height;
-  let noHigherNeighbor = true;
+  let noHigherOrViewSpotNeighbor = true;
   for (const neighborElement of element.neighbors) {
+    if (neighborElement.viewSpot) {
+      noHigherOrViewSpotNeighbor = false;
+      break;
+    }
     if (neighborElement.height > height) {
-      noHigherNeighbor = false;
+      noHigherOrViewSpotNeighbor = false;
       break;
     }
   }
-  return noHigherNeighbor;
+  return noHigherOrViewSpotNeighbor;
 }
 
 function findViewSpots (elementMap, heights, amount) {
@@ -102,7 +107,8 @@ function findViewSpots (elementMap, heights, amount) {
   for (const value of sortedByHeightsDesc) {
     const id = value.element_id;
     const element = elementMap[id];
-    if (hasNoHigherNeighbor(element)) {
+    if (hasNoHigherOrViewSpotNeighbor(element)) {
+      element.viewSpot = true;
       viewSpots.push(element);
       if (viewSpots.length >= amount) {
         break;
@@ -120,3 +126,8 @@ function stripResultDown (viewSpots) {
     };
   });
 }
+
+module.exports = {
+  processInput,
+  main
+};

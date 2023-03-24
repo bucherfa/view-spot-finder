@@ -1,8 +1,8 @@
-const findViewSpots = require('./main');
+const { processInput } = require('./main');
 
 module.exports.handler = async (data) => {
   try {
-    const viewSpots = await findViewSpots(data);
+    const viewSpots = await processInput(data);
     return {
       statusCode: 200,
       body: JSON.stringify(viewSpots)

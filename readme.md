@@ -19,3 +19,12 @@ serverless invoke local --function main --data '{"fileName":<mesh file>,"viewSpo
 # with example file from input folder
 serverless invoke local --function main --data '{"fileName":"input/mesh.json","viewSpotAmount":3}'
 ```
+
+## development
+
+```bash
+# run tests
+npm run tests
+# run linter
+npm run lint
+```

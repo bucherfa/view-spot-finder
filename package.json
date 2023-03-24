@@ -2,12 +2,13 @@
   "name": "view-spot-finder",
   "version": "1.0.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "semistandard --fix"
+    "test": "jest",
+    "lint": "semistandard --env jest --fix"
   },
   "author": "Fabian Bucher <git@fabianbucher.de>",
   "license": "ISC",
   "devDependencies": {
+    "jest": "^29.5.0",
     "semistandard": "^16.0.1"
   },
   "engines": {
