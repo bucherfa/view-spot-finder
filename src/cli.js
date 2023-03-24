@@ -6,6 +6,9 @@ const viewSpotAmount = args[3];
 
 processInput({ fileName, viewSpotAmount })
   .then(viewSpots => {
+    if (viewSpots.length < parseInt(viewSpotAmount)) {
+      console.warn(`Warning: Found fewer view spots than requested, only ${viewSpots.length} out of ${viewSpotAmount}.`);
+    }
     const formatted = viewSpots
       .map(spot => `  {element_id: ${spot.element_id}, value: ${spot.value}}`)
       .join(',\n');
